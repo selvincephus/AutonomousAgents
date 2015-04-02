@@ -30,6 +30,7 @@ void loop() {
     delay(100) ;
     
     if (irLeft == 0 && irRight == 1)
+      //While loop
       turnRight();
     else if (irRight == 0 && irLeft == 1)
           turnLeft();
