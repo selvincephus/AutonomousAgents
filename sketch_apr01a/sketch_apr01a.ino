@@ -4,8 +4,7 @@
 
 Servo servoLeft;
 Servo servoRight;
-int prob = 1;
-
+int stayThreshold = 500; //it can be translated to 1000 milisecond maybe
 
 void setup()
 {
@@ -13,8 +12,8 @@ void setup()
   pinMode(5, OUTPUT) ; pinMode(9, OUTPUT) ; pinMode(3, INPUT) ; pinMode(2, INPUT) ;
   servoLeft.attach(10);
   servoRight.attach(11);
-  //servoLeft.writeMicroseconds(1500);
-  //servoRight.writeMicroseconds(1500);
+  servoLeft.writeMicroseconds(1500);
+  servoRight.writeMicroseconds(1500);
   Serial. begin(9600) ;
 }
 
@@ -28,27 +27,46 @@ void loop() {
     Serial. print("Right");
     Serial. println(irRight) ; // Display 1/0 no detect/detect
     delay(100) ;
-    
+    int counter = 0;
     if (irLeft == 0 && irRight == 1)
-      //While loop
-      turnRight();
-      // end of the loop
+    {
+      while (irLeft == 0 && counter < stayThreshold) {
+        turnRight();
+        irLeft = irReading(String("l"));
+        counter = counter + 1;
+//        Serial. println("Turning Right");
+      }
+    }
     else if (irRight == 0 && irLeft == 1)
-          turnLeft();
+    {
+      while (irRight == 0 && counter < stayThreshold) {
+        turnLeft();
+        irRight = irReading(String("r"));
+        counter = counter + 1;
+      }
+    }
     else if (irLeft == 0 && irRight == 0)
-        {
-        int rr = random();
-        if (rr < prob)
-          {
+    {
+//      int rr = random();
+//      if (rr < prob)
+//      {
+        while ((irLeft == 0 && irRight == 0) && counter < stayThreshold) {
           turn90degreesRight();
+          irLeft = irReading(String("l"));
+          irRight = irReading(String("r"));
           //delay(500);
-          }
-        else
-        {
-          turn90degreesLeft();
-          //delay(500);
+          counter = counter + 1;
         }
-        }
+//      }
+//      else
+//      {
+//        while ((irLeft == 0 && irRight == 0) && counter < stayThreshold) {
+//          turn90degreesLeft();
+//          //delay(500);
+//          counter = counter + 1;
+//        }
+//      }
+    }
     else
        goForward();
 }// IR Obj ect Detection Function
@@ -61,14 +79,14 @@ void goForward()
 
 void turnRight()
   {
-  servoRight.writeMicroseconds(1580);
+  servoRight.writeMicroseconds(1700);
   servoLeft.writeMicroseconds(1700);
   }
 
 void turnLeft()
   {
-   servoRight.writeMicroseconds(1700);
-   servoLeft.writeMicroseconds(1580);
+   servoRight.writeMicroseconds(1300);
+   servoLeft.writeMicroseconds(1300);
   }
   
 void turn90degreesRight()
@@ -87,6 +105,21 @@ int irDetect(int irLedPin, int irReceiverPin, long frequency)
     tone(irLedPin, frequency, 8) ; // IRLED 38 kHz for at least 1 ms
     delay(1) ; // Wait 1 ms
     int ir = digitalRead(irReceiverPin) ; // IR receiver -> ir variable
-    delay(1) ; // Down time before recheck
+    delay(10) ; // Down time before recheck
     return ir; // Return 1 no detect, 0 detect
+}
+
+int irReading(String leftOrRight){
+  int irRead = 0;
+  if (leftOrRight=="l")
+  {
+    irRead = irDetect(9, 3, 38000) ;
+//    Serial.println("LeftReading");
+  }
+  else
+  {
+    irRead = irDetect(5, 2, 38000) ;
+//    Serial.println("RightReading");
+  }
+  return irRead;
 }
