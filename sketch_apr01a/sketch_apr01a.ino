@@ -32,6 +32,7 @@ void loop() {
     if (irLeft == 0 && irRight == 1)
       //While loop
       turnRight();
+      // end of the loop
     else if (irRight == 0 && irLeft == 1)
           turnLeft();
     else if (irLeft == 0 && irRight == 0)
