@@ -19,11 +19,13 @@ void setup()
 
 void loop() {
   // put your main code here, to run repeatedly:
-    int irLeft = irDetect(9, 3, 38000) ; // Check for obj ect
+//    int irLeft = irDetect(9, 3, 38000) ; // Check for obj ect
+    int irLeft = irReading(String("l"));
     Serial. print("Left");
     Serial. println(irLeft) ; // Display 1/0 no detect/detect
     
-    int irRight = irDetect(5, 2, 38000) ; // Check for obj ect
+//    int irRight = irDetect(5, 2, 38000) ; // Check for obj ect
+    int irRight = irReading(String("r"));
     Serial. print("Right");
     Serial. println(irRight) ; // Display 1/0 no detect/detect
     delay(100) ;
