@@ -5,6 +5,10 @@
 Servo servoLeft;
 Servo servoRight;
 int stayThreshold = 500; //it can be translated to 1000 milisecond maybe
+int irLeftOverTime = 0,irRightOverTime = 0;
+int turnT = 10;
+int maxOverTime = 15;
+
 
 void setup()
 {
@@ -21,44 +25,62 @@ void loop() {
   // put your main code here, to run repeatedly:
 //    int irLeft = irDetect(9, 3, 38000) ; // Check for obj ect
     int irLeft = irReading(String("l"));
-    Serial. print("Left");
-    Serial. println(irLeft) ; // Display 1/0 no detect/detect
+//    Serial. print("Left");
+//    Serial. println(irLeft) ; // Display 1/0 no detect/detect
     
 //    int irRight = irDetect(5, 2, 38000) ; // Check for obj ect
     int irRight = irReading(String("r"));
-    Serial. print("Right");
-    Serial. println(irRight) ; // Display 1/0 no detect/detect
-    delay(100) ;
+//    Serial. print("Right");
+    Serial.println("New reading");
+    Serial.println(irRight);
+    Serial. println(irRightOverTime) ; // Display 1/0 no detect/detect
+//    delay(100) ;
+
+    delay(100);
     int counter = 0;
-    if (irLeft == 0 && irRight == 1)
+    
+    
+    
+    if (irRight == 0) {
+      irRightOverTime = min(irRightOverTime + 1, maxOverTime);
+    } else {
+      irRightOverTime = max(irRightOverTime -1, 0);
+    }
+    if (irLeft == 0) {
+      irLeftOverTime = min(irLeftOverTime + 1, maxOverTime);
+    } else {
+      irLeftOverTime = max(irLeftOverTime - 1, 0);
+    }
+    
+    if (irLeftOverTime > irRightOverTime && irLeftOverTime > turnT)
     {
-      while (irLeft == 0 && counter < stayThreshold) {
+//      while (irLeft == 0 && counter < stayThreshold) {
         turnRight();
-        irLeft = irReading(String("l"));
-        counter = counter + 1;
+//        irLeft = irReading(String("l"));
+//        counter = counter + 1;
 //        Serial. println("Turning Right");
-      }
+//      }
     }
-    else if (irRight == 0 && irLeft == 1)
+    else if (irRightOverTime > turnT)
     {
-      while (irRight == 0 && counter < stayThreshold) {
+//      while (irRight == 0 && counter < stayThreshold) {
         turnLeft();
-        irRight = irReading(String("r"));
-        counter = counter + 1;
-      }
-    }
-    else if (irLeft == 0 && irRight == 0)
-    {
-//      int rr = random();
-//      if (rr < prob)
-//      {
-        while ((irLeft == 0 && irRight == 0) && counter < stayThreshold) {
-          turn90degreesRight();
-          irLeft = irReading(String("l"));
-          irRight = irReading(String("r"));
-          //delay(500);
-          counter = counter + 1;
-        }
+//        irRight = irReading(String("r"));
+//        counter = counter + 1;
+//      }
+//    }
+//    else if (irLeft == 0 && irRight == 0)
+//    {
+////      int rr = random();
+////      if (rr < prob)
+////      {
+//        while ((irLeft == 0 && irRight == 0) && counter < stayThreshold) {
+//          turn90degreesRight();
+//          irLeft = irReading(String("l"));
+//          irRight = irReading(String("r"));
+//          //delay(500);
+//          counter = counter + 1;
+//        }
 //      }
 //      else
 //      {
@@ -72,6 +94,10 @@ void loop() {
     else
        goForward();
 }// IR Obj ect Detection Function
+
+
+
+
 
 void goForward()
       {
