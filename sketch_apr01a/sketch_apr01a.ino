@@ -5,9 +5,16 @@
 Servo servoLeft;
 Servo servoRight;
 int stayThreshold = 500; //it can be translated to 1000 milisecond maybe
+<<<<<<< HEAD
 int leftCount = 0;
 int rightCount = 0;
 float lightThreshold = 0.1;
+=======
+int irLeftOverTime = 0,irRightOverTime = 0;
+int turnT = 10;
+int maxOverTime = 15;
+
+>>>>>>> origin/selvin_changes
 
 void setup()
 {
@@ -26,8 +33,8 @@ void loop() {
   // put your main code here, to run repeatedly:
 //    int irLeft = irDetect(9, 3, 38000) ; // Check for obj ect
     int irLeft = irReading(String("l"));
-    Serial. print("Left");
-    Serial. println(irLeft) ; // Display 1/0 no detect/detect
+//    Serial. print("Left");
+//    Serial. println(irLeft) ; // Display 1/0 no detect/detect
     
     // read the analog value for left phototransistor
     float leftPhoto = volts(A3);
@@ -46,10 +53,15 @@ void loop() {
     }
 //    int irRight = irDetect(5, 2, 38000) ; // Check for obj ect
     int irRight = irReading(String("r"));
-    Serial. print("Right");
-    Serial. println(irRight) ; // Display 1/0 no detect/detect
-    delay(100) ;
+//    Serial. print("Right");
+    Serial.println("New reading");
+    Serial.println(irRight);
+    Serial. println(irRightOverTime) ; // Display 1/0 no detect/detect
+//    delay(100) ;
+
+    delay(100);
     int counter = 0;
+<<<<<<< HEAD
     if (irLeft == 1)
     {
       leftCount = 0;
@@ -68,21 +80,48 @@ void loop() {
     }
 //    if (irLeft == 0 && irRight == 1)
     if (leftCount >= 5 && rightCount < 5)
+=======
+    
+    
+    
+    if (irRight == 0) {
+      irRightOverTime = min(irRightOverTime + 1, maxOverTime);
+    } else {
+      irRightOverTime = max(irRightOverTime -1, 0);
+    }
+    if (irLeft == 0) {
+      irLeftOverTime = min(irLeftOverTime + 1, maxOverTime);
+    } else {
+      irLeftOverTime = max(irLeftOverTime - 1, 0);
+    }
+    
+    if (irLeftOverTime > irRightOverTime && irLeftOverTime > turnT)
+>>>>>>> origin/selvin_changes
     {
-      while (irLeft == 0 && counter < stayThreshold) {
+//      while (irLeft == 0 && counter < stayThreshold) {
         turnRight();
+<<<<<<< HEAD
         irLeft = irReading(String("l"));
         counter = counter + 1;
         leftCount = 0;
         rightCount = 0;
+=======
+//        irLeft = irReading(String("l"));
+//        counter = counter + 1;
+>>>>>>> origin/selvin_changes
 //        Serial. println("Turning Right");
-      }
+//      }
     }
+<<<<<<< HEAD
 //    else if (irRight == 0 && irLeft == 1)
     else if (rightCount >= 5 && leftCount < 5)
+=======
+    else if (irRightOverTime > turnT)
+>>>>>>> origin/selvin_changes
     {
-      while (irRight == 0 && counter < stayThreshold) {
+//      while (irRight == 0 && counter < stayThreshold) {
         turnLeft();
+<<<<<<< HEAD
         irRight = irReading(String("r"));
         counter = counter + 1;
         leftCount = 0;
@@ -104,6 +143,24 @@ void loop() {
           leftCount = 0;
           rightCount = 0;
         }
+=======
+//        irRight = irReading(String("r"));
+//        counter = counter + 1;
+//      }
+//    }
+//    else if (irLeft == 0 && irRight == 0)
+//    {
+////      int rr = random();
+////      if (rr < prob)
+////      {
+//        while ((irLeft == 0 && irRight == 0) && counter < stayThreshold) {
+//          turn90degreesRight();
+//          irLeft = irReading(String("l"));
+//          irRight = irReading(String("r"));
+//          //delay(500);
+//          counter = counter + 1;
+//        }
+>>>>>>> origin/selvin_changes
 //      }
 //      else
 //      {
@@ -117,6 +174,10 @@ void loop() {
     else
        goForward();
 }// IR Obj ect Detection Function
+
+
+
+
 
 void goForward()
       {
