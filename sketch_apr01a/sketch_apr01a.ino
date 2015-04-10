@@ -6,8 +6,9 @@ Servo servoLeft;
 Servo servoRight;
 int stayThreshold = 500; //it can be translated to 1000 milisecond maybe
 int irLeftOverTime = 0,irRightOverTime = 0;
-int turnT = 10;
-int maxOverTime = 15;
+int turnT = 30;
+int maxOverTime = 50;
+float rp,lp,pTurn;
 
 
 void setup()
@@ -19,6 +20,7 @@ void setup()
   servoLeft.writeMicroseconds(1500);
   servoRight.writeMicroseconds(1500);
   Serial. begin(9600) ;
+  randomSeed(analogRead(0));
 }
 
 void loop() {
@@ -30,13 +32,11 @@ void loop() {
     
 //    int irRight = irDetect(5, 2, 38000) ; // Check for obj ect
     int irRight = irReading(String("r"));
-//    Serial. print("Right");
     Serial.println("New reading");
     Serial.println(irRight);
     Serial. println(irRightOverTime) ; // Display 1/0 no detect/detect
-//    delay(100) ;
 
-    delay(100);
+    delay(10);
     int counter = 0;
     
     
@@ -52,57 +52,26 @@ void loop() {
       irLeftOverTime = max(irLeftOverTime - 1, 0);
     }
     
-    if (irLeftOverTime > irRightOverTime && irLeftOverTime > turnT)
-    {
-//      while (irLeft == 0 && counter < stayThreshold) {
-        turnRight();
-//        irLeft = irReading(String("l"));
-//        counter = counter + 1;
-//        Serial. println("Turning Right");
-//      }
-    }
-    else if (irRightOverTime > turnT)
-    {
-//      while (irRight == 0 && counter < stayThreshold) {
-        turnLeft();
-//        irRight = irReading(String("r"));
-//        counter = counter + 1;
-//      }
-//    }
-//    else if (irLeft == 0 && irRight == 0)
-//    {
-////      int rr = random();
-////      if (rr < prob)
-////      {
-//        while ((irLeft == 0 && irRight == 0) && counter < stayThreshold) {
-//          turn90degreesRight();
-//          irLeft = irReading(String("l"));
-//          irRight = irReading(String("r"));
-//          //delay(500);
-//          counter = counter + 1;
-//        }
-//      }
-//      else
-//      {
-//        while ((irLeft == 0 && irRight == 0) && counter < stayThreshold) {
-//          turn90degreesLeft();
-//          //delay(500);
-//          counter = counter + 1;
-//        }
-//      }
-    }
-    else
-       goForward();
-}// IR Obj ect Detection Function
-
-
+   if(irRightOverTime > turnT) {
+      turnRight();
+      irRightOverTime = max(irRightOverTime + random(-4,5),turnT+1);
+      irRightOverTime -= random(1,5);
+   } else if (irLeftOverTime > turnT) {
+      turnLeft();
+      irLeftOverTime = max(irLeftOverTime + random(-4,5),turnT+1);
+      irRightOverTime -= random(-4,5);
+   } else {
+     goForward();
+   }
+}
+    
 
 
 
 void goForward()
       {
-      servoRight.writeMicroseconds(1700);
-      servoLeft.writeMicroseconds(1300);
+      servoRight.writeMicroseconds(1700-random(100));
+      servoLeft.writeMicroseconds(1300+random(100));
       }
 
 void turnRight()
