@@ -4,12 +4,15 @@
 
 Servo servoLeft;
 Servo servoRight;
+Servo servoSweep;
 int stayThreshold = 500; //it can be translated to 1000 milisecond maybe
 int irLeftOverTime = 0,irRightOverTime = 0;
 int turnT = 30;
 int maxOverTime = 50;
-float rp,lp,pTurn;
-
+int minAngle = 35;
+int maxAngle = 145;
+int sweepStep = 5;
+int sweepPos,sweepDir;
 
 void setup()
 {
@@ -19,8 +22,13 @@ void setup()
   servoRight.attach(11);
   servoLeft.writeMicroseconds(1500);
   servoRight.writeMicroseconds(1500);
-  Serial. begin(9600) ;
+  servoSweep.attach(8);
+  servoSweep.write(90);
+  sweepPos = 90;
+  sweepDir = 1;
+  Serial. begin(9600);
   randomSeed(analogRead(0));
+  delay(100);
 }
 
 void loop() {
@@ -32,11 +40,10 @@ void loop() {
     
 //    int irRight = irDetect(5, 2, 38000) ; // Check for obj ect
     int irRight = irReading(String("r"));
-    Serial.println("New reading");
-    Serial.println(irRight);
-    Serial. println(irRightOverTime) ; // Display 1/0 no detect/detect
+//    Serial.println("New reading");
+//    Serial.println(irRight);
+//    Serial. println(irRightOverTime) ; // Display 1/0 no detect/detect
 
-    delay(10);
     int counter = 0;
     
     
@@ -51,39 +58,61 @@ void loop() {
     } else {
       irLeftOverTime = max(irLeftOverTime - 1, 0);
     }
+ 
+ 
     
-   if(irRightOverTime > turnT) {
+   if(irRightOverTime > turnT && irRightOverTime + 1.0/random(1000) > irLeftOverTime) {
       turnRight();
       irRightOverTime = max(irRightOverTime + random(-4,5),turnT+1);
-      irRightOverTime -= random(1,5);
+      irLeftOverTime = 0;
    } else if (irLeftOverTime > turnT) {
       turnLeft();
       irLeftOverTime = max(irLeftOverTime + random(-4,5),turnT+1);
-      irRightOverTime -= random(-4,5);
+      irRightOverTime = 0;
    } else {
      goForward();
    }
+   
+   sweepPos += sweepStep * sweepDir;
+   servoSweep.write(sweepPos);
+   
+   Serial. println(sweepPos) ;
+   if (sweepPos >= maxAngle || sweepPos <= minAngle){
+     sweepDir *= -1;
+   }
+
+
+
+   
+   
 }
     
 
 
 
+
+
+
+
+
+
+
 void goForward()
-      {
-      servoRight.writeMicroseconds(1700-random(100));
-      servoLeft.writeMicroseconds(1300+random(100));
-      }
+  {
+    servoRight.writeMicroseconds(1700-random(100));
+    servoLeft.writeMicroseconds(1300+random(100));
+  }
 
 void turnRight()
   {
-  servoRight.writeMicroseconds(1700);
-  servoLeft.writeMicroseconds(1700);
+  servoRight.writeMicroseconds(1300);
+  servoLeft.writeMicroseconds(1300);
   }
 
 void turnLeft()
   {
-   servoRight.writeMicroseconds(1300);
-   servoLeft.writeMicroseconds(1300);
+   servoRight.writeMicroseconds(1700);
+   servoLeft.writeMicroseconds(1700);
   }
   
 void turn90degreesRight()
